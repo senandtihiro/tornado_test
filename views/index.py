@@ -41,3 +41,17 @@ class GetMethodHandler(RequestHandler):
 
     def post(self, *args, **kwargs):
         pass
+
+
+class PostMethodHandler(RequestHandler):
+    '''
+    类比diango中的视图
+    当请求的URI为 r'/get_method?a=1&b=2&c=3'的时候
+    '''
+    def get(self, *args, **kwargs):
+        self.render('post_file.html')
+
+    def post(self, *args, **kwargs):
+        username = self.get_body_argument('username')
+        password = self.get_body_argument('password')
+        print('debug username and password', username, password)

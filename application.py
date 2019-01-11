@@ -9,5 +9,6 @@ class Application(tornado.web.Application):
             (r'/', index.IndexHandler),
             (r'/param_transmit/(\w+)/(\w+)/(\w+)', index.ParamURIHandler),
             (r'/get_method', index.GetMethodHandler),
+            (r'/post_method', index.PostMethodHandler),
         ]
         super(Application, self).__init__(handlers, **config.options)
