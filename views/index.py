@@ -110,3 +110,24 @@ class FileUploadHandler(RequestHandler):
                 with open(file_path, 'wb') as f:
                     f.write(file.body)
         self.write('upload files ok')
+
+
+class HomeHandler(RequestHandler):
+    '''
+    类比diango中的视图
+    当请求的URI为 r'/get_method?a=1&b=2&c=3'的时候
+    '''
+    def get(self, *args, **kwargs):
+        self.render('home.html', num=100)
+
+
+
+class FuncHandler(RequestHandler):
+    '''
+    类比diango中的视图
+    当请求的URI为 r'/get_method?a=1&b=2&c=3'的时候
+    '''
+    def get(self, *args, **kwargs):
+        def my_sum(n1, n2):
+            return n1 + n2
+        self.render('home.html', my_sum=my_sum)

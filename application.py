@@ -12,5 +12,7 @@ class Application(tornado.web.Application):
             (r'/post_method', index.PostMethodHandler),
             (r'/request_object', index.RequestObjHandler),
             (r'/file_upload', index.FileUploadHandler),
+            (r'/home', index.HomeHandler),
+            (r'/func', index.FuncHandler),
         ]
         super(Application, self).__init__(handlers, **config.options)
