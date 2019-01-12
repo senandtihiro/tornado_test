@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>学生信息</title>
+</head>
+<body>
+    <ul>
+        {% for student in students %}
+        <li>
+            姓名：{{student.name}} 年龄: {{ student.age }}
+        </li>
+        {% end %}
+    </ul>
+</body>
+</html>
