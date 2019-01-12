@@ -16,5 +16,7 @@ class Application(tornado.web.Application):
             (r'/func', index.FuncHandler),
             (r'/stutents', index.StudentsHandler),
             (r'/cookie_count', index.CookieCountHandler),
+            (r'/login', index.LoginHandler),
+            (r'/async_request', index.AsyncRequestHandler),
         ]
         super(Application, self).__init__(handlers, **config.options)

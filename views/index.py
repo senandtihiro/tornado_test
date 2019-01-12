@@ -1,7 +1,9 @@
 import tornado.web
 import os
+import json
 import config
 from tornado.web import RequestHandler
+from tornado.httpclient import AsyncHTTPClient
 
 class IndexHandler(RequestHandler):
     '''
@@ -112,15 +114,6 @@ class FileUploadHandler(RequestHandler):
         self.write('upload files ok')
 
 
-class HomeHandler(RequestHandler):
-    '''
-    类比diango中的视图
-    当请求的URI为 r'/get_method?a=1&b=2&c=3'的时候
-    '''
-    def get(self, *args, **kwargs):
-        self.render('home.html', num=100)
-
-
 class FuncHandler(RequestHandler):
     '''
     类比diango中的视图
@@ -155,3 +148,62 @@ class CookieCountHandler(RequestHandler):
             count += 1
         self.set_cookie('count', str(count))
         self.render('cookie_count.html', count=count)
+
+
+class HomeHandler(RequestHandler):
+    '''
+    类比diango中的视图
+    当请求的URI为 r'/get_method?a=1&b=2&c=3'的时候
+    '''
+    def get_current_user(self):
+        flag = self.get_argument('flag', None)
+        return flag
+
+    @tornado.web.authenticated
+    def get(self, *args, **kwargs):
+        self.render('home.html')
+
+class LoginHandler(RequestHandler):
+    '''
+    类比diango中的视图
+    '''
+    def get(self, *args, **kwargs):
+        self.render('login.html')
+
+    def post(self, *args, **kwargs):
+        name = self.get_body_argument('username')
+        password = self.get_body_argument('password')
+        if name == '1' and password == '1':
+            _next = self.get_argument('next', '/')
+            self.redirect(_next + '?flag=False')
+        else:
+            self.redirect('login.html')
+
+
+class AsyncRequestHandler(RequestHandler):
+    '''
+    类比diango中的视图
+    '''
+    def on_response(self, response):
+        if response.error:
+            self.send_error(500)
+        else:
+            data = json.loads(response.body)
+            self.write(data)
+        self.finish()
+
+    @tornado.web.asynchronous
+    def get(self, *args, **kwargs):
+        client = AsyncHTTPClient()
+        url = 'http://www.baidu.com'
+        client.fetch(url, self.on_response)
+
+
+    def post(self, *args, **kwargs):
+        name = self.get_body_argument('username')
+        password = self.get_body_argument('password')
+        if name == '1' and password == '1':
+            _next = self.get_argument('next', '/')
+            self.redirect(_next + '?flag=False')
+        else:
+            self.redirect('login.html')
