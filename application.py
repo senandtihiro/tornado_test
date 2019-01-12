@@ -14,5 +14,7 @@ class Application(tornado.web.Application):
             (r'/file_upload', index.FileUploadHandler),
             (r'/home', index.HomeHandler),
             (r'/func', index.FuncHandler),
+            (r'/stutents', index.StudentsHandler),
+            (r'/cookie_count', index.CookieCountHandler),
         ]
         super(Application, self).__init__(handlers, **config.options)

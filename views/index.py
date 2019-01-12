@@ -121,7 +121,6 @@ class HomeHandler(RequestHandler):
         self.render('home.html', num=100)
 
 
-
 class FuncHandler(RequestHandler):
     '''
     类比diango中的视图
@@ -131,3 +130,28 @@ class FuncHandler(RequestHandler):
         def my_sum(n1, n2):
             return n1 + n2
         self.render('home.html', my_sum=my_sum)
+
+
+class StudentsHandler(RequestHandler):
+    '''
+    类比diango中的视图
+    当请求的URI为 r'/get_method?a=1&b=2&c=3'的时候
+    '''
+    def get(self, *args, **kwargs):
+        students = []
+        self.render('students.html', students=students)
+
+
+class CookieCountHandler(RequestHandler):
+    '''
+    类比diango中的视图
+    '''
+    def get(self, *args, **kwargs):
+        count = self.get_cookie('count', None)
+        if not count:
+            count = 1
+        else:
+            count = int(count)
+            count += 1
+        self.set_cookie('count', str(count))
+        self.render('cookie_count.html', count=count)
