@@ -1,9 +1,14 @@
 import tornado.web
 import os
 import json
+import time
 import config
 from tornado.web import RequestHandler
 from tornado.httpclient import AsyncHTTPClient
+from tornado.concurrent import run_on_executor
+from tornado import gen
+from concurrent.futures import ThreadPoolExecutor
+
 
 class IndexHandler(RequestHandler):
     '''
@@ -12,8 +17,36 @@ class IndexHandler(RequestHandler):
     def get(self, *args, **kwargs):
         self.write('hello tornado!')
 
-    def post(self, *args, **kwargs):
-        pass
+
+class TimeSleepHandler(RequestHandler):
+    '''
+    必须定义一个executor的属性，然后run_on_executor 注解才管用。
+    '''
+    executor = ThreadPoolExecutor(max_workers=5)
+    @run_on_executor
+    def background_task(self):
+        time.sleep(8)
+
+    @gen.coroutine
+    def get(self, *args, **kwargs):
+        self.background_task()
+        self.write('hello tornado!')
+
+
+class TimeSleepResHandler(RequestHandler):
+    '''
+    必须定义一个executor的属性，然后run_on_executor 注解才管用。
+    '''
+    executor = ThreadPoolExecutor(max_workers=5)
+    @run_on_executor
+    def background_task(self):
+        time.sleep(8)
+        return 'hello tornado'
+
+    @tornado.gen.coroutine
+    def get(self, *args, **kwargs):
+        res = yield self.background_task()
+        self.write(res)
 
 
 class ParamURIHandler(RequestHandler):
@@ -199,11 +232,21 @@ class AsyncRequestHandler(RequestHandler):
         client.fetch(url, self.on_response)
 
 
-    def post(self, *args, **kwargs):
-        name = self.get_body_argument('username')
-        password = self.get_body_argument('password')
-        if name == '1' and password == '1':
-            _next = self.get_argument('next', '/')
-            self.redirect(_next + '?flag=False')
+class AsyncCoroutineHandler(RequestHandler):
+    '''
+    类比diango中的视图
+    '''
+    def on_response(self, response):
+        if response.error:
+            self.send_error(500)
         else:
-            self.redirect('login.html')
+            data = json.loads(response.body)
+            self.write(data)
+        self.finish()
+
+    # @tornado.gen
+    # def get(self, *args, **kwargs):
+    #     client = AsyncHTTPClient()
+    #     url = 'http://www.baidu.com'
+    #     client.fetch(url, self.on_response)
+
